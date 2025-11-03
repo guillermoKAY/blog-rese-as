@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reseñas de Juegos</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -14,9 +14,40 @@
       padding: 20px;
     }
 
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
     h1 {
-      text-align: center;
       color: #ffcc00;
+      margin: 0;
+    }
+
+    .search-container {
+      position: relative;
+      width: 250px;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 8px 30px 8px 10px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-container svg {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      fill: #555;
     }
 
     .review {
@@ -44,10 +75,34 @@
       font-size: 14px;
       color: #aaa;
     }
+
+    @media (max-width: 768px) {
+      .review {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .text, img {
+        width: 100%;
+      }
+
+      img {
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>🎮 Mis Reseñas</h1>
+  <header>
+    <h1>Guillermo Adventures Reseñas</h1>
+    <div class="search-container">
+      <input id="search" type="text" placeholder="Buscar juego..." />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M21.53 20.47l-4.73-4.73A7.93 7.93 0 0016 9a8 8 0 10-8 8 7.93 7.93 0 006.74-3.2l4.73 4.73a.75.75 0 101.06-1.06zM4 9a5 5 0 1110 0A5 5 0 014 9z" />
+      </svg>
+    </div>
+  </header>
+
   <div id="reviews"></div>
 
   <script>
@@ -55,20 +110,27 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    let reseñas = [];
+
     async function cargarReseñas() {
       const { data, error } = await supabase
         .from('juego')
-        .select('nombre, autor, genero, contenido, imagen_url, fecha_reseña, categoria(nombre)');
+        .select('nombre, autor, genero, contenido, imagen_url, fecha_reseña');
 
       if (error) {
         console.error('Error al cargar reseñas:', error);
         return;
       }
 
+      reseñas = data;
+      mostrarReseñas(reseñas);
+    }
+
+    function mostrarReseñas(lista) {
       const contenedor = document.getElementById('reviews');
       contenedor.innerHTML = '';
 
-      data.forEach(juego => {
+      lista.forEach(juego => {
         const div = document.createElement('div');
         div.className = 'review';
         div.innerHTML = `
@@ -83,6 +145,16 @@
         contenedor.appendChild(div);
       });
     }
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const texto = e.target.value.toLowerCase();
+      const filtradas = reseñas.filter(j =>
+        j.nombre.toLowerCase().includes(texto) ||
+        j.genero.toLowerCase().includes(texto) ||
+        (j.autor && j.autor.toLowerCase().includes(texto))
+      );
+      mostrarReseñas(filtradas);
+    });
 
     cargarReseñas();
   </script>
