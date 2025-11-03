@@ -4,159 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guillermo Adventures Reseñas</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #0e0e0e;
-      color: #fff;
       margin: 0;
-      padding: 20px;
+      background-color: #f3f4f6;
     }
 
     header {
+      background-color: #111827;
+      color: white;
+      padding: 10px 15px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 30px;
+    }
+
+    .menu-btn {
+      font-size: 24px;
+      cursor: pointer;
+      margin-right: 15px;
     }
 
     h1 {
-      color: #ffcc00;
+      font-size: 20px;
       margin: 0;
     }
 
-    .search-container {
-      position: relative;
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
       width: 250px;
-    }
-
-    .search-container input {
-      width: 100%;
-      padding: 8px 30px 8px 10px;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .search-container svg {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 18px;
-      height: 18px;
-      fill: #555;
-    }
-
-    .review {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #1a1a1a;
-      border-radius: 12px;
+      height: 100%;
+      background-color: #1f2937;
+      color: white;
+      transition: 0.3s;
       padding: 20px;
-      margin: 20px 0;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+      overflow-y: auto;
+      z-index: 100;
     }
 
-    .text {
-      width: 60%;
-      line-height: 1.5;
+    #sidebar.active {
+      left: 0;
     }
 
-    img {
-      width: 35%;
+    #sidebar h2 {
+      font-size: 18px;
+      margin-top: 0;
+      border-bottom: 1px solid #374151;
+      padding-bottom: 5px;
+    }
+
+    #search {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    .category {
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      transition: background 0.2s;
+    }
+
+    .category:hover {
+      background-color: #374151;
+    }
+
+    main {
+      padding: 20px;
+      transition: margin-left 0.3s;
+    }
+
+    .game-card {
+      background: white;
       border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
     }
 
-    .categoria {
-      font-size: 14px;
-      color: #aaa;
+    .game-card img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
     }
 
-    @media (max-width: 768px) {
-      .review {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .text, img {
-        width: 100%;
-      }
-
-      img {
-        margin-top: 10px;
-      }
+    .game-card h3 {
+      margin: 0;
+      font-size: 20px;
     }
+
+    .game-card p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 50;
+    }
+
+    #sidebar.active ~ .overlay {
+      display: block;
+    }
+
   </style>
 </head>
 <body>
   <header>
-    <h1>🎮 Mis Reseñas</h1>
-    <div class="search-container">
-      <input id="search" type="text" placeholder="Buscar juego..." />
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M21.53 20.47l-4.73-4.73A7.93 7.93 0 0016 9a8 8 0 10-8 8 7.93 7.93 0 006.74-3.2l4.73 4.73a.75.75 0 101.06-1.06zM4 9a5 5 0 1110 0A5 5 0 014 9z" />
-      </svg>
-    </div>
+    <span class="menu-btn" onclick="toggleSidebar()">☰</span>
+    <h1>Blog de Reseñas</h1>
   </header>
 
-  <div id="reviews"></div>
+  <div id="sidebar">
+    <h2>Buscar</h2>
+    <input type="text" id="search" placeholder="Buscar juego...">
+    <h2>Categorías</h2>
+    <div id="categories"></div>
+  </div>
+
+  <div class="overlay" onclick="toggleSidebar()"></div>
+
+  <main id="content">
+    <p>Cargando reseñas...</p>
+  </main>
 
   <script>
-    const supabaseUrl = 'https://dydaknsgiumsittwrpii.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const SUPABASE_URL = "https://dydaknsgiumsittwrpii.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let reseñas = [];
+    const content = document.getElementById("content");
+    const categoriesDiv = document.getElementById("categories");
+    const searchInput = document.getElementById("search");
 
-    async function cargarReseñas() {
-      const { data, error } = await supabase
-        .from('juego')
-        .select('nombre, autor, genero, contenido, imagen_url, fecha_reseña');
+    async function loadCategories() {
+      const { data: categorias } = await supabase.from("categoria").select("*");
+      for (const cat of categorias) {
+        // contar juegos por categoría
+        const { count } = await supabase
+          .from("juego")
+          .select("*", { count: "exact", head: true })
+          .eq("id_categoria", cat.id_categoria);
+        const div = document.createElement("div");
+        div.className = "category";
+        div.textContent = `${cat.nombre} (${count ?? 0})`;
+        div.onclick = () => loadGames(cat.id_categoria);
+        categoriesDiv.appendChild(div);
+      }
+    }
 
-      if (error) {
-        console.error('Error al cargar reseñas:', error);
+    async function loadGames(categoryId = null, searchText = "") {
+      let query = supabase.from("juego").select(`
+        id_juego, nombre, autor, genero, fecha_lanzamiento, fecha_reseña, imagen_url, contenido, categoria(nombre)
+      `);
+      if (categoryId) query = query.eq("id_categoria", categoryId);
+      if (searchText) query = query.ilike("nombre", `%${searchText}%`);
+      const { data: juegos } = await query;
+      displayGames(juegos);
+    }
+
+    function displayGames(juegos) {
+      content.innerHTML = "";
+      if (!juegos || juegos.length === 0) {
+        content.innerHTML = "<p>No se encontraron reseñas.</p>";
         return;
       }
-
-      reseñas = data;
-      mostrarReseñas(reseñas);
-    }
-
-    function mostrarReseñas(lista) {
-      const contenedor = document.getElementById('reviews');
-      contenedor.innerHTML = '';
-
-      lista.forEach(juego => {
-        const div = document.createElement('div');
-        div.className = 'review';
-        div.innerHTML = `
-          <div class="text">
-            <h2>${juego.nombre}</h2>
-            <p class="categoria">${juego.genero} — ${juego.autor}</p>
-            <p>${juego.contenido}</p>
-            <p><i>Publicado el ${new Date(juego.fecha_reseña).toLocaleDateString()}</i></p>
-          </div>
-          <img src="${juego.imagen_url}" alt="${juego.nombre}">
+      for (const j of juegos) {
+        const card = document.createElement("div");
+        card.className = "game-card";
+        card.innerHTML = `
+          <img src="${j.imagen_url}" alt="${j.nombre}">
+          <h3>${j.nombre}</h3>
+          <p><b>Autor:</b> ${j.autor ?? "Desconocido"}</p>
+          <p><b>Género:</b> ${j.genero ?? "-"}</p>
+          <p><b>Fecha lanzamiento:</b> ${j.fecha_lanzamiento ?? "-"}</p>
+          <p>${j.contenido ?? ""}</p>
         `;
-        contenedor.appendChild(div);
-      });
+        content.appendChild(card);
+      }
     }
 
-    document.getElementById('search').addEventListener('input', (e) => {
-      const texto = e.target.value.toLowerCase();
-      const filtradas = reseñas.filter(j =>
-        j.nombre.toLowerCase().includes(texto) ||
-        j.genero.toLowerCase().includes(texto) ||
-        (j.autor && j.autor.toLowerCase().includes(texto))
-      );
-      mostrarReseñas(filtradas);
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      loadGames(null, e.target.value);
     });
 
-    cargarReseñas();
+    loadCategories();
+    loadGames();
   </script>
 </body>
 </html>
