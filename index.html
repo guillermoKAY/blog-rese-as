@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reseñas de Juegos</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0e0e0e;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffcc00;
+    }
+
+    .review {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .text {
+      width: 60%;
+      line-height: 1.5;
+    }
+
+    img {
+      width: 35%;
+      border-radius: 10px;
+    }
+
+    .categoria {
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Mis Reseñas</h1>
+  <div id="reviews"></div>
+
+  <script>
+    const supabaseUrl = 'https://dydaknsgiumsittwrpii.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function cargarReseñas() {
+      const { data, error } = await supabase
+        .from('juego')
+        .select('nombre, autor, genero, contenido, imagen_url, fecha_reseña, categoria(nombre)');
+
+      if (error) {
+        console.error('Error al cargar reseñas:', error);
+        return;
+      }
+
+      const contenedor = document.getElementById('reviews');
+      contenedor.innerHTML = '';
+
+      data.forEach(juego => {
+        const div = document.createElement('div');
+        div.className = 'review';
+        div.innerHTML = `
+          <div class="text">
+            <h2>${juego.nombre}</h2>
+            <p class="categoria">${juego.genero} — ${juego.autor}</p>
+            <p>${juego.contenido}</p>
+            <p><i>Publicado el ${new Date(juego.fecha_reseña).toLocaleDateString()}</i></p>
+          </div>
+          <img src="${juego.imagen_url}" alt="${juego.nombre}">
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    cargarReseñas();
+  </script>
+</body>
+</html>
