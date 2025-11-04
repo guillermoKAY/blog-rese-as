@@ -6,7 +6,7 @@
   <title>Guillermo Adventures Reseñas</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
-    /* --- ESTILOS DE DISEÑO OSCURO Y HORIZONTAL --- */
+    /* --- ESTILOS BASE (SIN CAMBIOS MAYORES) --- */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -63,7 +63,6 @@
 
     main { padding: 20px; transition: margin-left 0.3s; }
     
-    /* Tarjeta de Juego (Lista) - Diseño Horizontal */
     .game-card {
       background: #1f2937; border: 1px solid #374151;
       border-radius: 10px; padding: 15px;
@@ -94,13 +93,14 @@
       background-color: #111827; 
     }
     
-    /* Vista de Detalle */
+    /* --- CAMBIOS CLAVE PARA CENTRAR EL DETALLE --- */
     #game-detail {
         display: none; 
         max-width: 800px;
+        margin: 0 auto; /* Centra el contenedor principal */
+        text-align: center; /* Centra los elementos de bloque y texto */
     }
 
-    /* Marco para la imagen de detalle */
     .detail-image-frame {
       max-width: 500px; 
       height: 300px;    
@@ -109,7 +109,7 @@
       border-radius: 8px;
       padding: 10px; 
       box-sizing: border-box;
-      margin-bottom: 20px;
+      margin: 20px auto; /* Centra el marco de la imagen */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -118,16 +118,47 @@
     .detail-image-frame img {
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Ajusta la imagen completa dentro del marco */
+      object-fit: contain; 
       border-radius: 4px;
     }
     
-    #game-detail h2 { color: #ffffff; font-size: 28px; }
-    #game-detail p { color: #e5e7eb; line-height: 1.6; }
+    #game-detail h2 { 
+        color: #ffffff; 
+        font-size: 28px; 
+        margin-bottom: 25px;
+    }
+
+    /* Contenedor para la información clave (Desarrollador, Género, Fechas) */
+    .detail-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+        gap: 15px;
+        text-align: left; /* Alinea el texto de la información a la izquierda dentro del grid */
+        max-width: 600px; /* Limita el ancho del bloque de información */
+        margin: 0 auto 30px auto; /* Centra el bloque de información y añade espacio */
+        padding: 15px;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        background-color: #1f2937;
+    }
+    
+    .detail-info p { 
+        margin: 0; 
+        padding: 0; 
+        font-size: 15px;
+    }
+
+    /* Contenido de la Reseña (el texto largo) */
     #game-detail-content {
       white-space: pre-wrap; 
+      text-align: left; /* Alinea la reseña larga a la izquierda para mejor lectura */
+      margin-top: 15px;
     }
+
     .back-btn {
+        /* Se alinea a la izquierda para que el usuario pueda empezar a leer/interactuar inmediatamente */
+        float: left; 
+        margin-left: 10px; 
         background: #374151;
         color: white;
         border: none;
@@ -135,11 +166,16 @@
         border-radius: 5px;
         cursor: pointer;
         font-size: 16px;
-        margin-bottom: 20px;
         transition: background 0.2s;
     }
     .back-btn:hover { background: #4f5e7a; }
 
+    /* Asegurar que el contenido fluya después del botón flotante */
+    .detail-container {
+        clear: both;
+        text-align: left;
+    }
+    
     .overlay {
       display: none; position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -172,7 +208,7 @@
   </main>
 
   <script>
-    // --- CONFIGURACIÓN DE SUPABASE ---
+    // --- CONFIGURACIÓN Y VARIABLES ---
     const SUPABASE_URL = "https://dydaknsgiumsittwrpii.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -183,7 +219,7 @@
     const gameListDiv = document.getElementById("game-list");
     const gameDetailDiv = document.getElementById("game-detail");
 
-    // --- FUNCIONES DE LÓGICA ---
+    // --- FUNCIONES DE LÓGICA (NO CAMBIAN SU FUNCIONALIDAD) ---
 
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("active");
@@ -237,7 +273,6 @@
     async function loadGames(categoryId = null, searchText = "") {
       gameListDiv.innerHTML = "<p>Cargando reseñas...</p>";
       
-      // *** CAMBIO CLAVE: Usar 'desarrollador' ***
       let query = supabaseClient.from("juego").select(`
         id_juego, nombre, desarrollador, genero, fecha_lanzamiento, imagen_url, categoria(nombre)
       `); 
@@ -287,6 +322,7 @@
       }
     }
 
+    /* --- CAMBIOS CLAVE: NUEVA ESTRUCTURA HTML PARA EL DETALLE --- */
     async function loadSingleGame(gameId) {
       const { data: juego, error } = await supabaseClient
         .from("juego")
@@ -303,23 +339,33 @@
       gameListDiv.style.display = "none";
       gameDetailDiv.style.display = "block";
       
+      // Estructura HTML que usa las nuevas clases CSS para centrar y organizar
       gameDetailDiv.innerHTML = `
         <button class="back-btn" onclick="showListView()">← Volver a la lista</button>
-        <h2>${juego.nombre}</h2>
         
-        <div class="detail-image-frame">
-          <img src="${juego.imagen_url || 'placeholder.jpg'}" alt="${juego.nombre}">
-        </div>
-        
-        <p><b>Desarrollador:</b> ${juego.desarrollador ?? "Desconocido"}</p>
-        <p><b>Género:</b> ${juego.genero ?? "-"}</p>
-        <p><b>Categoría:</b> ${juego.categoria?.nombre ?? "-"}</p>
-        <p><b>Fecha lanzamiento:</b> ${juego.fecha_lanzamiento ?? "-"}</p>
-        <p><b>Fecha reseña:</b> ${juego.fecha_reseña ?? "-"}</p>
-        <hr>
-        <h3>Reseña:</h3>
-        <div id="game-detail-content">
-          ${juego.contenido ?? "No hay reseña disponible."}
+        <div class="detail-container">
+            <h2>${juego.nombre}</h2>
+            
+            <div class="detail-image-frame">
+              <img src="${juego.imagen_url || 'placeholder.jpg'}" alt="${juego.nombre}">
+            </div>
+
+            <div class="detail-info">
+                <p><b>Desarrollador:</b> ${juego.desarrollador ?? "Desconocido"}</p>
+                <p><b>Género:</b> ${juego.genero ?? "-"}</p>
+                <p><b>Categoría:</b> ${juego.categoria?.nombre ?? "-"}</p>
+                <p><b>Fecha lanzamiento:</b> ${juego.fecha_lanzamiento ?? "-"}</p>
+                <p><b>Fecha reseña:</b> ${juego.fecha_reseña ?? "-"}</p>
+                </div>
+
+            <hr style="max-width: 600px; margin: 30px auto; border-color: #374151;">
+
+            <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+                <h3>Reseña:</h3>
+                <div id="game-detail-content">
+                  ${juego.contenido ?? "No hay reseña disponible."}
+                </div>
+            </div>
         </div>
       `;
     }
