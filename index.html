@@ -6,151 +6,116 @@
   <title>Guillermo Adventures Reseñas</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
-    /* --- CSS ACTUALIZADO --- */
-
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      /* FONDO OSCURO PARA LA PÁGINA */
       background-color: #111827;
-      /* TEXTO CLARO POR DEFECTO */
       color: #e5e7eb;
     }
-
     header {
       background-color: #111827;
       color: white;
       padding: 10px 15px;
       display: flex;
       align-items: center;
-      /* Añadida una sombra sutil para separarlo del contenido */
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       position: sticky;
       top: 0;
       z-index: 20;
     }
-
-    /* ESTILO DEL BOTÓN DE MENÚ MEJORADO */
     .menu-btn {
-      font-size: 28px; /* Más grande */
+      font-size: 28px;
       cursor: pointer;
       margin-right: 15px;
-      padding: 5px 10px; /* Más área de click */
+      padding: 5px 10px;
       border-radius: 5px;
       transition: background 0.2s;
     }
-
-    .menu-btn:hover {
-      background-color: #374151; /* Efecto hover */
-    }
-    /* --- FIN ESTILO BOTÓN --- */
-
-    h1 {
-      font-size: 20px;
-      margin: 0;
-    }
+    .menu-btn:hover { background-color: #374151; }
+    h1 { font-size: 20px; margin: 0; }
 
     #sidebar {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
-      background-color: #1f2937;
-      color: white;
-      transition: 0.3s;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow-y: auto;
+      position: fixed; top: 0; left: -250px;
+      width: 250px; height: 100%;
+      background-color: #1f2937; color: white;
+      transition: 0.3s; padding: 20px;
+      box-sizing: border-box; overflow-y: auto;
       z-index: 100;
     }
-
-    #sidebar.active {
-      left: 0;
-    }
-
+    #sidebar.active { left: 0; }
     #sidebar h2 {
-      font-size: 18px;
-      margin-top: 0;
+      font-size: 18px; margin-top: 0;
       border-bottom: 1px solid #374151;
       padding-bottom: 5px;
     }
-
     #search {
-      width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      outline: none;
-      /* Estilo oscuro para el input */
-      background-color: #374151;
+      width: 100%; padding: 8px; border: none;
+      border-radius: 5px; margin-bottom: 15px;
+      outline: none; background-color: #374151;
       color: white;
     }
-
     .category {
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      margin-bottom: 5px;
+      cursor: pointer; padding: 8px;
+      border-radius: 4px; margin-bottom: 5px;
       transition: background 0.2s;
     }
+    .category:hover { background-color: #374151; }
 
-    .category:hover {
-      background-color: #374151;
-    }
-
-    main {
-      padding: 20px;
-      transition: margin-left 0.3s;
-    }
-
-    /* ESTILO DE TARJETA MODO OSCURO */
+    main { padding: 20px; transition: margin-left 0.3s; }
+    
+    /* --- TARJETA DE JUEGO (LISTA) --- */
     .game-card {
-      /* Fondo oscuro para la tarjeta */
-      background: #1f2937;
-      border: 1px solid #374151; /* Borde sutil */
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
+      background: #1f2937; border: 1px solid #374151;
+      border-radius: 10px; padding: 15px;
+      margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       max-width: 600px;
+      cursor: pointer; /* Añadido para mostrar que es clickable */
+      transition: border-color 0.2s;
     }
-
+    .game-card:hover { border-color: #4f5e7a; }
     .game-card img {
-      max-width: 100%;
-      border-radius: 8px;
+      max-width: 100%; border-radius: 8px;
       margin-bottom: 10px;
     }
-
-    .game-card h3 {
-      margin: 0;
-      font-size: 20px;
-      /* Título de la tarjeta en blanco */
-      color: #ffffff;
+    .game-card h3 { margin: 0; font-size: 20px; color: #ffffff; }
+    .game-card p { margin: 5px 0; color: #d1d5db; }
+    
+    /* --- VISTA DE DETALLE (NUEVO) --- */
+    #game-detail {
+        display: none; /* Oculto por defecto */
+        max-width: 800px;
     }
-
-    .game-card p {
-      margin: 5px 0;
-      /* Texto de la tarjeta en gris claro */
-      color: #d1d5db;
+    #game-detail img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
     }
-    /* --- FIN ESTILO TARJETA --- */
+    #game-detail h2 { color: #ffffff; font-size: 28px; }
+    #game-detail p { color: #e5e7eb; line-height: 1.6; }
+    #game-detail-content {
+        /* Permite saltos de línea y formato del texto */
+        white-space: pre-wrap; 
+    }
+    .back-btn {
+        background: #374151;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-bottom: 20px;
+        transition: background 0.2s;
+    }
+    .back-btn:hover { background: #4f5e7a; }
 
+    /* --- Overlay --- */
     .overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); /* Overlay un poco más oscuro */
-      z-index: 50;
+      display: none; position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 50;
     }
-
-    #sidebar.active ~ .overlay {
-      display: block;
-    }
+    #sidebar.active ~ .overlay { display: block; }
   </style>
 </head>
 <body>
@@ -169,74 +134,186 @@
   <div class="overlay" onclick="toggleSidebar()"></div>
 
   <main id="content">
-    <p>Cargando reseñas...</p>
+    <div id="game-list">
+      <p>Cargando reseñas...</p>
+    </div>
+    
+    <div id="game-detail">
+      </div>
   </main>
 
   <script>
-    // --- TU JAVASCRIPT (SIN CAMBIOS) ---
     const SUPABASE_URL = "https://dydaknsgiumsittwrpii.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // --- CORRECCIÓN DEL ERROR ---
+    // El objeto global de la CDN es 'supabase'.
+    // Creamos nuestro cliente con un nombre de variable DIFERENTE
+    // para no entrar en conflicto.
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Referencias a los contenedores
     const content = document.getElementById("content");
     const categoriesDiv = document.getElementById("categories");
     const searchInput = document.getElementById("search");
+    const gameListDiv = document.getElementById("game-list");
+    const gameDetailDiv = document.getElementById("game-detail");
 
     async function loadCategories() {
-      const { data: categorias } = await supabase.from("categoria").select("*");
+      // Usamos el cliente corregido: supabaseClient
+      const { data: categorias, error } = await supabaseClient
+        .from("categoria")
+        .select("*")
+        .order('nombre', { ascending: true }); // Orden alfabético
+
+      if (error) {
+        console.error("Error cargando categorías:", error);
+        return;
+      }
+
+      categoriesDiv.innerHTML = ""; // Limpiar antes de cargar
+
+      // Añadir un enlace "Mostrar Todos"
+      const allDiv = document.createElement("div");
+      allDiv.className = "category";
+      allDiv.textContent = "Mostrar Todos";
+      allDiv.onclick = () => {
+        showListView(); // Volver a la lista
+        loadGames(); // Cargar todos los juegos
+        toggleSidebar(); // Cerrar sidebar
+      };
+      categoriesDiv.appendChild(allDiv);
+
       for (const cat of categorias) {
-        // contar juegos por categoría
-        const { count } = await supabase
+        // Contar juegos por categoría (usando el cliente corregido)
+        const { count, error: countError } = await supabaseClient
           .from("juego")
           .select("*", { count: "exact", head: true })
           .eq("id_categoria", cat.id_categoria);
+
+        if (countError) {
+            console.error("Error contando juegos:", countError);
+        }
+
         const div = document.createElement("div");
         div.className = "category";
-        div.textContent = `${cat.nombre} (${count ?? 0})`;
-        div.onclick = () => loadGames(cat.id_categoria);
+        // Esta es la lógica que pediste: "Soulslike (1)"
+        div.textContent = `${cat.nombre} (${count ?? 0})`; 
+        
+        // Esta es la lógica que pediste: clickear y filtrar
+        div.onclick = () => {
+          showListView(); // Asegurarse de estar en la vista de lista
+          loadGames(cat.id_categoria); // Cargar solo esa categoría
+          toggleSidebar(); // Cerrar el sidebar
+        };
         categoriesDiv.appendChild(div);
       }
     }
 
     async function loadGames(categoryId = null, searchText = "") {
-      let query = supabase.from("juego").select(`
-        id_juego, nombre, autor, genero, fecha_lanzamiento, fecha_reseña, imagen_url, contenido, categoria(nombre)
-      `);
+      gameListDiv.innerHTML = "<p>Cargando reseñas...</p>";
+      
+      // Construir la consulta (usando el cliente corregido)
+      let query = supabaseClient.from("juego").select(`
+        id_juego, nombre, autor, genero, fecha_lanzamiento, imagen_url, categoria(nombre)
+      `); // No traemos 'contenido' para que la lista cargue más rápido
+
       if (categoryId) query = query.eq("id_categoria", categoryId);
       if (searchText) query = query.ilike("nombre", `%${searchText}%`);
-      const { data: juegos } = await query;
+      
+      query = query.order('fecha_reseña', { ascending: false }); // Mostrar más nuevos primero
+
+      const { data: juegos, error } = await query;
+
+      if (error) {
+        console.error("Error cargando juegos:", error);
+        gameListDiv.innerHTML = "<p>Error al cargar las reseñas.</p>";
+        return;
+      }
+
       displayGames(juegos);
     }
 
     function displayGames(juegos) {
-      content.innerHTML = "";
+      gameListDiv.innerHTML = ""; // Limpiar
       if (!juegos || juegos.length === 0) {
-        content.innerHTML = "<p>No se encontraron reseñas.</p>";
+        gameListDiv.innerHTML = "<p>No se encontraron reseñas.</p>";
         return;
       }
+
       for (const j of juegos) {
         const card = document.createElement("div");
         card.className = "game-card";
+        
+        // Esta es la lógica que pediste: click para ver detalle
+        card.onclick = () => loadSingleGame(j.id_juego); 
+        
         card.innerHTML = `
-          <img src="${j.imagen_url}" alt="${j.nombre}">
+          <img src="${j.imagen_url || 'placeholder.jpg'}" alt="${j.nombre}">
           <h3>${j.nombre}</h3>
           <p><b>Autor:</b> ${j.autor ?? "Desconocido"}</p>
-          <p><b>Género:</b> ${j.genero ?? "-"}</p>
-          <p><b>Fecha lanzamiento:</b> ${j.fecha_lanzamiento ?? "-"}</p>
-          <p>${j.contenido ?? ""}</p>
+          <p><b>Categoría:</b> ${j.categoria?.nombre ?? "-"}</p>
+          <p><b>Lanzamiento:</b> ${j.fecha_lanzamiento ?? "-"}</p>
         `;
-        content.appendChild(card);
+        gameListDiv.appendChild(card);
       }
+    }
+
+    // --- NUEVA FUNCIÓN PARA VISTA DE DETALLE ---
+    async function loadSingleGame(gameId) {
+      // 1. Consultar el juego específico (¡ahora sí pedimos 'contenido'!)
+      const { data: juego, error } = await supabaseClient
+        .from("juego")
+        .select(`*, categoria(nombre)`) // Pedimos todo
+        .eq("id_juego", gameId)
+        .single(); // Esperamos un solo resultado
+
+      if (error) {
+        console.error("Error cargando juego:", error);
+        alert("No se pudo cargar la reseña.");
+        return;
+      }
+
+      // 2. Ocultar la lista y mostrar el detalle
+      gameListDiv.style.display = "none";
+      gameDetailDiv.style.display = "block";
+
+      // 3. Rellenar el contenido del detalle
+      gameDetailDiv.innerHTML = `
+        <button class="back-btn" onclick="showListView()">← Volver a la lista</button>
+        <h2>${juego.nombre}</h2>
+        <img src="${juego.imagen_url || 'placeholder.jpg'}" alt="${juego.nombre}">
+        <p><b>Autor:</b> ${juego.autor ?? "Desconocido"}</p>
+        <p><b>Género:</b> ${juego.genero ?? "-"}</p>
+        <p><b>Categoría:</b> ${juego.categoria?.nombre ?? "-"}</p>
+        <p><b>Fecha lanzamiento:</b> ${juego.fecha_lanzamiento ?? "-"}</p>
+        <p><b>Fecha reseña:</b> ${juego.fecha_reseña ?? "-"}</p>
+        <hr>
+        <h3>Reseña:</h3>
+        <div id="game-detail-content">
+          ${juego.contenido ?? "No hay reseña disponible."}
+        </div>
+      `;
+    }
+
+    // --- NUEVA FUNCIÓN PARA VOLVER A LA LISTA ---
+    function showListView() {
+      gameDetailDiv.style.display = "none"; // Ocultar detalle
+      gameListDiv.style.display = "block";  // Mostrar lista
+      searchInput.value = ""; // Limpiar búsqueda
     }
 
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("active");
     }
 
+    // --- EVENTOS ACTUALIZADOS ---
     searchInput.addEventListener("input", (e) => {
+      showListView(); // Asegurarse de estar en la lista
       loadGames(null, e.target.value);
     });
 
+    // Carga inicial
     loadCategories();
     loadGames();
   </script>
