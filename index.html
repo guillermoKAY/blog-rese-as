@@ -6,10 +6,15 @@
   <title>Guillermo Adventures Reseñas</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
+    /* --- CSS ACTUALIZADO --- */
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #f3f4f6;
+      /* FONDO OSCURO PARA LA PÁGINA */
+      background-color: #111827;
+      /* TEXTO CLARO POR DEFECTO */
+      color: #e5e7eb;
     }
 
     header {
@@ -18,13 +23,27 @@
       padding: 10px 15px;
       display: flex;
       align-items: center;
+      /* Añadida una sombra sutil para separarlo del contenido */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
 
+    /* ESTILO DEL BOTÓN DE MENÚ MEJORADO */
     .menu-btn {
-      font-size: 24px;
+      font-size: 28px; /* Más grande */
       cursor: pointer;
       margin-right: 15px;
+      padding: 5px 10px; /* Más área de click */
+      border-radius: 5px;
+      transition: background 0.2s;
     }
+
+    .menu-btn:hover {
+      background-color: #374151; /* Efecto hover */
+    }
+    /* --- FIN ESTILO BOTÓN --- */
 
     h1 {
       font-size: 20px;
@@ -64,6 +83,9 @@
       border-radius: 5px;
       margin-bottom: 15px;
       outline: none;
+      /* Estilo oscuro para el input */
+      background-color: #374151;
+      color: white;
     }
 
     .category {
@@ -83,12 +105,15 @@
       transition: margin-left 0.3s;
     }
 
+    /* ESTILO DE TARJETA MODO OSCURO */
     .game-card {
-      background: white;
+      /* Fondo oscuro para la tarjeta */
+      background: #1f2937;
+      border: 1px solid #374151; /* Borde sutil */
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       max-width: 600px;
@@ -103,32 +128,35 @@
     .game-card h3 {
       margin: 0;
       font-size: 20px;
+      /* Título de la tarjeta en blanco */
+      color: #ffffff;
     }
 
     .game-card p {
       margin: 5px 0;
-      color: #555;
+      /* Texto de la tarjeta en gris claro */
+      color: #d1d5db;
     }
+    /* --- FIN ESTILO TARJETA --- */
 
     .overlay {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5); /* Overlay un poco más oscuro */
       z-index: 50;
     }
 
     #sidebar.active ~ .overlay {
       display: block;
     }
-
   </style>
 </head>
 <body>
   <header>
     <span class="menu-btn" onclick="toggleSidebar()">☰</span>
-    <h1>Blog de Reseñas</h1>
+    <h1>Guillermo Adventures Reseñas</h1>
   </header>
 
   <div id="sidebar">
@@ -145,6 +173,7 @@
   </main>
 
   <script>
+    // --- TU JAVASCRIPT (SIN CAMBIOS) ---
     const SUPABASE_URL = "https://dydaknsgiumsittwrpii.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
