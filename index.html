@@ -6,6 +6,7 @@
   <title>Guillermo Adventures Reseñas</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
+    /* --- ESTILOS DE DISEÑO OSCURO Y HORIZONTAL --- */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -62,7 +63,7 @@
 
     main { padding: 20px; transition: margin-left 0.3s; }
     
-    /* --- CAMBIO AQUÍ: TARJETA DE JUEGO (LISTA) --- */
+    /* Tarjeta de Juego (Lista) - Diseño Horizontal */
     .game-card {
       background: #1f2937; border: 1px solid #374151;
       border-radius: 10px; padding: 15px;
@@ -70,47 +71,43 @@
       max-width: 600px;
       cursor: pointer;
       transition: border-color 0.2s;
-      
-      /* --- Convertir en layout horizontal --- */
       display: flex;
-      flex-direction: row; /* Texto e imagen en fila */
-      justify-content: space-between; /* Empuja el contenido y la imagen a los extremos */
-      align-items: center; /* Centra verticalmente */
+      flex-direction: row; 
+      justify-content: space-between; 
+      align-items: center; 
     }
     .game-card:hover { border-color: #4f5e7a; }
 
-    /* Contenedor para el texto de la izquierda */
     .game-card-content {
-      flex: 1; /* El texto ocupa el espacio disponible */
+      flex: 1; 
+      margin-right: 15px;
     }
     
     .game-card-content h3 { margin: 0 0 10px 0; font-size: 20px; color: #ffffff; }
     .game-card-content p { margin: 5px 0; color: #d1d5db; font-size: 14px; }
 
-    /* Imagen de la derecha (thumbnail) */
     .game-card-image {
-      width: 120px;  /* Ancho fijo */
-      height: 90px; /* Alto fijo */
-      object-fit: cover; /* Rellena el espacio, recortando si es necesario */
+      width: 120px;  
+      height: 90px; 
+      object-fit: cover; 
       border-radius: 8px;
-      margin-left: 15px; /* Espacio entre texto e imagen */
-      background-color: #111827; /* Fondo por si la imagen no carga */
+      background-color: #111827; 
     }
     
-    /* --- CAMBIO AQUÍ: VISTA DE DETALLE --- */
+    /* Vista de Detalle */
     #game-detail {
-        display: none; /* Oculto por defecto */
+        display: none; 
         max-width: 800px;
     }
 
-    /* --- "Marco" para la imagen de detalle --- */
+    /* Marco para la imagen de detalle */
     .detail-image-frame {
-      max-width: 500px; /* Ancho máximo del marco */
-      height: 300px;    /* Alto fijo del marco */
-      background-color: #111827; /* Fondo oscuro para el "marco" */
+      max-width: 500px; 
+      height: 300px;    
+      background-color: #111827; 
       border: 1px solid #374151;
       border-radius: 8px;
-      padding: 10px; /* Espacio entre la imagen y el borde del marco */
+      padding: 10px; 
       box-sizing: border-box;
       margin-bottom: 20px;
       display: flex;
@@ -118,12 +115,10 @@
       justify-content: center;
     }
     
-    /* --- Imagen dentro del marco --- */
     .detail-image-frame img {
       width: 100%;
       height: 100%;
-      /* Esta es la clave: muestra la imagen completa, con "letterboxing" */
-      object-fit: contain; 
+      object-fit: contain; /* Ajusta la imagen completa dentro del marco */
       border-radius: 4px;
     }
     
@@ -177,6 +172,7 @@
   </main>
 
   <script>
+    // --- CONFIGURACIÓN DE SUPABASE ---
     const SUPABASE_URL = "https://dydaknsgiumsittwrpii.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5ZGFrbnNnaXVtc2l0dHdycGlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODgyMjYsImV4cCI6MjA3Nzc2NDIyNn0.SE6OjxdWZ5_tG2vqDHogvcWNwyYuPi1POWhD03Uqthg";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -186,6 +182,18 @@
     const searchInput = document.getElementById("search");
     const gameListDiv = document.getElementById("game-list");
     const gameDetailDiv = document.getElementById("game-detail");
+
+    // --- FUNCIONES DE LÓGICA ---
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("active");
+    }
+
+    function showListView() {
+      gameDetailDiv.style.display = "none"; 
+      gameListDiv.style.display = "block";  
+      searchInput.value = ""; 
+    }
 
     async function loadCategories() {
       const { data: categorias, error } = await supabaseClient
@@ -229,10 +237,11 @@
     async function loadGames(categoryId = null, searchText = "") {
       gameListDiv.innerHTML = "<p>Cargando reseñas...</p>";
       
+      // *** CAMBIO CLAVE: Usar 'desarrollador' ***
       let query = supabaseClient.from("juego").select(`
-        id_juego, nombre, autor, genero, fecha_lanzamiento, imagen_url, categoria(nombre)
+        id_juego, nombre, desarrollador, genero, fecha_lanzamiento, imagen_url, categoria(nombre)
       `); 
-
+      
       if (categoryId) query = query.eq("id_categoria", categoryId);
       if (searchText) query = query.ilike("nombre", `%${searchText}%`);
       
@@ -248,7 +257,6 @@
       displayGames(juegos);
     }
 
-    /* --- CAMBIO AQUÍ: FUNCIÓN displayGames --- */
     function displayGames(juegos) {
       gameListDiv.innerHTML = ""; 
       if (!juegos || juegos.length === 0) {
@@ -261,11 +269,10 @@
         card.className = "game-card";
         card.onclick = () => loadSingleGame(j.id_juego); 
         
-        // --- Estructura HTML actualizada: [contenido][imagen] ---
         card.innerHTML = `
           <div class="game-card-content">
             <h3>${j.nombre}</h3>
-            <p><b>Autor:</b> ${j.autor ?? "Desconocido"}</p>
+            <p><b>Desarrollador:</b> ${j.desarrollador ?? "Desconocido"}</p>
             <p><b>Categoría:</b> ${j.categoria?.nombre ?? "-"}</p>
             <p><b>Lanzamiento:</b> ${j.fecha_lanzamiento ?? "-"}</p>
           </div>
@@ -275,13 +282,11 @@
             class="game-card-image"
           >
         `;
-        // --- Fin de la estructura actualizada ---
         
         gameListDiv.appendChild(card);
       }
     }
 
-    /* --- CAMBIO AQUÍ: FUNCIÓN loadSingleGame --- */
     async function loadSingleGame(gameId) {
       const { data: juego, error } = await supabaseClient
         .from("juego")
@@ -298,7 +303,6 @@
       gameListDiv.style.display = "none";
       gameDetailDiv.style.display = "block";
       
-      // --- Estructura HTML actualizada: con "marco" para la imagen ---
       gameDetailDiv.innerHTML = `
         <button class="back-btn" onclick="showListView()">← Volver a la lista</button>
         <h2>${juego.nombre}</h2>
@@ -307,7 +311,7 @@
           <img src="${juego.imagen_url || 'placeholder.jpg'}" alt="${juego.nombre}">
         </div>
         
-        <p><b>Autor:</b> ${juego.autor ?? "Desconocido"}</p>
+        <p><b>Desarrollador:</b> ${juego.desarrollador ?? "Desconocido"}</p>
         <p><b>Género:</b> ${juego.genero ?? "-"}</p>
         <p><b>Categoría:</b> ${juego.categoria?.nombre ?? "-"}</p>
         <p><b>Fecha lanzamiento:</b> ${juego.fecha_lanzamiento ?? "-"}</p>
@@ -318,19 +322,9 @@
           ${juego.contenido ?? "No hay reseña disponible."}
         </div>
       `;
-      // --- Fin de la estructura actualizada ---
     }
 
-    function showListView() {
-      gameDetailDiv.style.display = "none"; 
-      gameListDiv.style.display = "block";  
-      searchInput.value = ""; 
-    }
-
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("active");
-    }
-
+    // --- INICIALIZACIÓN ---
     searchInput.addEventListener("input", (e) => {
       showListView(); 
       loadGames(null, e.target.value);
